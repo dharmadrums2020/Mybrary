@@ -5,8 +5,10 @@ if (process.env.NODE_ENV !== 'production') {
 const express = require('express')
 const app = express()
 const expressLayouts = require('express-ejs-layouts')
+const bodyParser = require('body-parser')
 //require index router ./ relative path
 const indexRouter = require('./routes/index')
+const authorRouter = require('./routes/authors')
 
 //configure express apllication ejs is view engine
 app.set('view engine','ejs')
@@ -19,7 +21,7 @@ app.set('layout', 'layouts/layout')
 app.use(expressLayouts)
 //tell express where public files will be
 app.use(express.static('public'))
-
+app.use(express.urlencoded({ limit: '10mb', extended: false}))
 
 //mongoose lets us work with mongodb v easily
 const mongoose = require('mongoose')
@@ -29,5 +31,6 @@ const db = mongoose.connection
 db.on('error', error => console.error(error))
 db.once('open', () => console.log('connected to Mongoose'))
 app.use('/', indexRouter)
+app.use('/authors', authorRouter)
 //listen on a certain port server will tell us what port it is listening to, port 3000 for local
 app.listen(process.env.PORT || 3000)
